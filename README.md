@@ -1,4 +1,4 @@
-# spacecraft-telemetry-fault-detection
+# Spacecraft Telemetry Fault Detection
 
 ## Overview
 ## Signals Modeled
