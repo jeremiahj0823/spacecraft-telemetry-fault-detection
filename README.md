@@ -1,8 +1,8 @@
 # Spacecraft Telemetry Fault Detection
 
 ## Overview
-## Signals Modeled
-## Faults Injected
+## Signals
+## Faults
 ## Detection Logic
 ## State Machine
 ## Results
