@@ -1,5 +1,6 @@
 #include <cmath>
 #include <fstream>
+#include <sstream>
 #include <iomanip>
 #include <iostream>
 #include <random>
@@ -43,27 +44,49 @@ int main() {
 
     int heartbeat = 1;
 
+    bool heartbeat_fail = true;
+    int heartbeat_fail_time_s = 450;
+
+    bool power_loss = true;
+    int fault_start_time_s = 300;
+    double v_loss = 0.02;
+    double v_min = 20;
+
     out << "time_s,panel_v,battery_pct,temp_c,heartbeat_ok\n";
     out << fixed << setprecision(3);
 
     for (int t = 0; t < totalSeconds; t++) {
         double voltageNoise = voltageNoiseND(rng);
         panel_v += voltageNoise;
-        if (panel_v > 28) {
+        if (power_loss && t >= fault_start_time_s) {
+            panel_v -= v_loss;
+            panel_v = clamp(v_min, 30, panel_v);
+        }
+        else {
+            if (panel_v > 28) {
             panel_v -= 0.01;
+            }
+            else if (panel_v < 28) {
+                panel_v += 0.01;
+            }
+            panel_v = clamp(26, 30, panel_v);
         }
-        else if (panel_v < 28) {
-            panel_v += 0.01;
+        if (power_loss && t >= fault_start_time_s) {
+            battery_pct = clamp(0, 100, battery_pct - load * 6);
         }
-        panel_v = clamp(26, 30, panel_v);
-
-        battery_pct = clamp(0, 100, battery_pct - load * 2);
+        else {
+            battery_pct = clamp(0, 100, battery_pct - load * 2);
+        }
 
         double tempNoise = tempNoiseND(rng);
         double targetTemp_c = 20.0 + 2.0 * (load / nominalLoad);
         double alpha = 0.01;
         temp_c += alpha * (targetTemp_c - temp_c) + tempNoise;
         temp_c = clamp(10, 30, temp_c);
+
+        if (heartbeat_fail && t >= heartbeat_fail_time_s) {
+            heartbeat = 0;
+        }
 
         out << t << "," << panel_v << "," << battery_pct << "," << temp_c << "," << heartbeat << "\n"; 
     }
