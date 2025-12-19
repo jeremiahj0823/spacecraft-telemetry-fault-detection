@@ -32,7 +32,7 @@ int main() {
     normal_distribution<double> voltageNoiseND(0, 0.01);
     normal_distribution<double> tempNoiseND(0, 0.01);
 
-    double panel_v = 28.0;
+    double bus_v = 28.0;
     double battery_pct = 100.0;
     double temp_c = 20.0;
 
@@ -48,47 +48,60 @@ int main() {
     int heartbeat_fail_time_s = 450;
 
     bool power_loss = true;
-    int fault_start_time_s = 300;
+    int loss_start_time_s = 300;
     double v_loss = 0.02;
     double v_min = 20;
 
-    out << "time_s,panel_v,battery_pct,temp_c,heartbeat_ok\n";
+    bool overheat = true;
+    int overheat_start_time_s = 600;
+    double overheat_add_temp = 0.05;
+
+    out << "time_s,bus_v,battery_pct,temp_c,heartbeat_ok\n";
     out << fixed << setprecision(3);
 
     for (int t = 0; t < totalSeconds; t++) {
         double voltageNoise = voltageNoiseND(rng);
-        panel_v += voltageNoise;
-        if (power_loss && t >= fault_start_time_s) {
-            panel_v -= v_loss;
-            panel_v = clamp(v_min, 30, panel_v);
+        bus_v += voltageNoise;
+        if (power_loss && t >= loss_start_time_s) {
+            bus_v -= v_loss;
+            bus_v = clamp(v_min, 30, bus_v);
         }
         else {
-            if (panel_v > 28) {
-            panel_v -= 0.01;
+            if (bus_v > 28) {
+            bus_v -= 0.01;
             }
-            else if (panel_v < 28) {
-                panel_v += 0.01;
+            else if (bus_v < 28) {
+                bus_v += 0.01;
             }
-            panel_v = clamp(26, 30, panel_v);
-        }
-        if (power_loss && t >= fault_start_time_s) {
-            battery_pct = clamp(0, 100, battery_pct - load * 6);
-        }
-        else {
-            battery_pct = clamp(0, 100, battery_pct - load * 2);
+            bus_v = clamp(26, 30, bus_v);
         }
 
         double tempNoise = tempNoiseND(rng);
         double targetTemp_c = 20.0 + 2.0 * (load / nominalLoad);
         double alpha = 0.01;
         temp_c += alpha * (targetTemp_c - temp_c) + tempNoise;
+        if (overheat && t >= overheat_start_time_s) {
+            temp_c += overheat_add_temp;
+        }
         temp_c = clamp(10, 30, temp_c);
+
+        if (power_loss && t >= loss_start_time_s) {
+            if (temp_c >= 25) {
+                battery_pct = clamp(0, 100, battery_pct - load * 8);
+            }
+            else {
+                battery_pct = clamp(0, 100, battery_pct - load * 6);
+            }
+        }
+        else {
+            battery_pct = clamp(0, 100, battery_pct - load * 2);
+        }
 
         if (heartbeat_fail && t >= heartbeat_fail_time_s) {
             heartbeat = 0;
         }
 
-        out << t << "," << panel_v << "," << battery_pct << "," << temp_c << "," << heartbeat << "\n"; 
+        out << t << "," << bus_v << "," << battery_pct << "," << temp_c << "," << heartbeat << "\n"; 
     }
 
     out.flush();
