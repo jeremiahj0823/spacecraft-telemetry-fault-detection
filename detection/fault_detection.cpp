@@ -126,6 +126,9 @@ int main() {
             if (v_gain_counter >= v_persist_s) {
                 v_loss = false;
             }
+            else {
+                v_gain_counter = 0;
+            }
         }
 
         if (!battery_low && battery_pct <= low_battery) {

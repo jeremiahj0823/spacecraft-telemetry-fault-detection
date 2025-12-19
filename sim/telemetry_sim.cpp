@@ -45,7 +45,7 @@ int main() {
     int heartbeat = 1;
 
     bool heartbeat_fail = true;
-    int heartbeat_fail_time_s = 450;
+    int heartbeat_fail_time_s = 1150;
 
     bool power_loss = true;
     int loss_start_time_s = 300;

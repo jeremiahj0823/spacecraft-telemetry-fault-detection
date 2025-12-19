@@ -126,5 +126,6 @@ int main() {
     inFile.close();
     outFile.flush();
     outFile.close();
+    
     return 0;
 }
