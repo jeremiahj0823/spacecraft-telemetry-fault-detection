@@ -74,3 +74,19 @@ Refining thresholds and persistence criteria
 Visualizing state transitions for analysis with Python
 
 Implementing hardware for hardware-in-the-loop testing
+
+## How To Run
+
+Run the commands in this order:
+```
+g++ sim/telemetry_sim.cpp -o sim/telemetry
+
+./sim/telemetry
+
+g++ detection/fault_detection.cpp -o detection/fault
+
+./detection/fault
+
+g++ state/state_machine.cpp -o state/fsm
+./state/fsm
+```
