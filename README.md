@@ -1,7 +1,7 @@
 # Spacecraft Telemetry Fault Detection
 
 ## Overview
-## Signals
+## Simulation
 ## Faults
 ## Detection Logic
 ## State Machine
