@@ -80,11 +80,9 @@ Implementing hardware for hardware-in-the-loop testing
 Run the commands in this order:
 ```
 g++ sim/telemetry_sim.cpp -o sim/telemetry
-
 ./sim/telemetry
 
 g++ detection/fault_detection.cpp -o detection/fault
-
 ./detection/fault
 
 g++ state/state_machine.cpp -o state/fsm
