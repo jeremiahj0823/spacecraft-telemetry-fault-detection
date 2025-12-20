@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project simulates spacecraft telemetry data pipelines and injects faultswhile implementing
+This project simulates spacecraft telemetry data pipelines and injects faults while implementing
 fault detection and finite state machine mode management logic. The system is designed to
 model a spacecraft detecting faults and transitioning to safe operating modes.
 
